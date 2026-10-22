@@ -33,8 +33,6 @@ main{flex:1;min-height:0;overflow:auto;padding:0 16px 16px;position:relative;dis
 ::-webkit-scrollbar{width:14px;height:14px}::-webkit-scrollbar-thumb{background:var(--mute);border-radius:8px;border:3px solid var(--bg)}::-webkit-scrollbar-track{background:var(--bg)}
 #favp{position:fixed;top:56px;left:16px;z-index:8;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;max-width:calc(100vw - 32px);box-shadow:0 4px 16px rgba(0,0,0,.25)}
 .fr{display:flex;gap:10px;align-items:center;padding:4px 0;flex-wrap:wrap}
-#nav{position:fixed;right:22px;bottom:22px;display:flex;flex-direction:column;gap:6px;z-index:5}
-#nav button{box-shadow:0 1px 4px rgba(0,0,0,.25);padding:6px 10px}
 #drop{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;height:100%;min-height:260px;border:2px dashed var(--line);border-radius:12px;margin-top:16px;color:var(--mute);text-align:center;padding:20px}
 #drop.over,body.over #drop{border-color:var(--accent);color:var(--ink)}
 #drop big{font-size:22px;color:var(--ink);font-weight:600}
@@ -88,12 +86,6 @@ audio{width:100%;flex:none}
   </div>
 </main>
 <div id="favp" hidden></div>
-<div id="nav" hidden>
-  <button id="nTop" title="Go to top (Home)">Top</button>
-  <button id="nUp" title="Page up (PgUp)">Up</button>
-  <button id="nDn" title="Page down (PgDn)">Down</button>
-  <button id="nEnd" title="Go to bottom (End)">Bottom</button>
-</div>
 <script>
 const $=s=>document.querySelector(s);
 const main=$('#main'),tabs=$('#tabs'),bar=$('#bar');
@@ -111,7 +103,6 @@ function add(list){
 function show(i){cur=i;drawTabs();render();}
 function drawTabs(){
   tabs.hidden=false;
-  document.getElementById('nav').hidden=!files.length;
   ['bClose','bCloseAll','bRefresh','bSave','bPrint','bPin'].forEach(id=>document.getElementById(id).disabled=!files.length);
   document.getElementById('bPin').textContent=(files[cur]&&favs.has(files[cur].name))?'★ Pinned':'☆ Pin';
   tabs.innerHTML='';
@@ -336,7 +327,6 @@ async function init(){
 init();
 function scroller(){return main.querySelector('.tw,pre.txt')||main;}
 function go(w){const s=scroller(),h=s.clientHeight*.9;if(w==='top')s.scrollTo({top:0});else if(w==='end')s.scrollTo({top:s.scrollHeight});else s.scrollBy({top:w==='up'?-h:h});}
-$('#nTop').onclick=()=>go('top');$('#nUp').onclick=()=>go('up');$('#nDn').onclick=()=>go('down');$('#nEnd').onclick=()=>go('end');
 addEventListener('keydown',e=>{
   if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)||!files.length)return;
   const m={Home:'top',End:'end',PageUp:'up',PageDown:'down'}[e.key];
