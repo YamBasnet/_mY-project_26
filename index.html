@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#09100d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>Library Reader</title>
+<style>
+:root{--bg:#09100d;--pn:#101a16;--ln:#1e2d26;--ink:#e8f1ec;--mu:#8aa095;--ac:#9be564;--ac2:#4cc38a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(900px 500px at 80% -10%,#16301f,transparent 60%),var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex}
+.mu{color:var(--mu)}
+#side{width:220px;flex:none;border-right:1px solid var(--ln);padding:18px 14px;display:flex;flex-direction:column;gap:6px;background:rgba(10,18,14,.6)}
+.logo{display:flex;gap:10px;align-items:center;font-weight:700;font-size:17px;margin-bottom:14px}
+.logo i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;color:#0a1a10;font-style:normal}
+.nv{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--mu);cursor:pointer;border:0;background:none;font:inherit;text-align:left}
+.nv.on{background:var(--ac);color:#0b1c10;font-weight:650}
+#wrap{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+#view{flex:1;overflow:auto;padding:18px 20px 96px}
+h1{font-size:26px;margin:2px 0 0}h1 span{background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+h3{margin:0 0 8px;font-size:16px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.act{display:flex;gap:8px;flex-wrap:wrap}
+.cd{position:relative;background:var(--pn);border:1px solid var(--ln);border-radius:14px;padding:14px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kp b{font-size:28px;display:block;margin:2px 0}.g{color:var(--ac);font-size:12px}
+.ring{--p:0;position:absolute;right:12px;top:12px;width:46px;height:46px;border-radius:50%;background:conic-gradient(var(--ac) calc(var(--p)*1%),var(--ln) 0);display:grid;place-items:center}
+.ring::after{content:"";width:34px;height:34px;border-radius:50%;background:var(--pn)}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:12px}
+.row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--ln);cursor:pointer}
+.row:last-child{border:0}
+.ext{width:42px;height:42px;border-radius:10px;background:#16261e;color:var(--ac);display:grid;place-items:center;font:700 11px/1 ui-monospace,monospace;flex:none;text-transform:uppercase}
+.nm{flex:1;min-width:0}.nm b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nm small{color:var(--mu)}
+.st{background:none;border:0;color:var(--mu);font-size:22px;padding:6px 8px;cursor:pointer}.st.on{color:var(--ac)}
+.b{font:inherit;border:1px solid var(--ln);background:var(--pn);color:var(--ink);padding:8px 14px;border-radius:10px;cursor:pointer;display:inline-block}
+.b.p{background:var(--ac);color:#0b1c10;border-color:var(--ac);font-weight:650}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:10px 0}.chips .b{text-transform:capitalize;white-space:nowrap}
+input,select{font:inherit;background:#0c1511;color:var(--ink);border:1px solid var(--ln);border-radius:10px;padding:9px 12px;min-width:0}
+label.f{display:block;margin:8px 0;color:var(--mu);font-size:13px}label.f input{display:block;width:100%;margin-top:4px}
+#rd{position:fixed;inset:0;background:var(--bg);z-index:30;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+#rd[hidden]{display:none}
+.rt{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--ln)}
+.rt h2{flex:1;font-size:15px;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tb{display:flex;gap:8px;padding:8px 12px;flex-wrap:wrap;align-items:center}
+#rb{flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto;padding:0 12px calc(12px + env(safe-area-inset-bottom))}
+pre.tx{flex:1;min-height:0;margin:0;padding:14px;background:var(--pn);border:1px solid var(--ln);border-radius:12px;font:13px/1.55 ui-monospace,Consolas,Menlo,monospace;overflow:auto;white-space:pre;tab-size:4}
+pre.tx.wrap{white-space:pre-wrap;word-break:break-word}
+.doc{flex:none;background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:16px 20px;max-width:80ch;margin:0 auto;width:100%}
+.doc pre{background:var(--bg);padding:10px;border-radius:8px;overflow:auto}.doc code{background:var(--bg);padding:1px 4px;border-radius:4px}.doc li{margin-left:1.2em;display:list-item}.doc a{color:var(--ac)}
+.tw{flex:1;min-height:0;overflow:auto;border:1px solid var(--ln);border-radius:12px;background:var(--pn)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--ln);border-right:1px solid var(--ln);text-align:left;white-space:nowrap;max-width:360px;overflow:hidden;text-overflow:ellipsis}
+th{position:sticky;top:0;background:#14211b;cursor:pointer;z-index:1}
+mark{background:#5a6b00;color:inherit}
+iframe,embed{flex:1;width:100%;min-height:60vh;border:1px solid var(--ln);border-radius:12px;background:#fff}
+img.fit{flex:1;min-height:0;width:100%;object-fit:contain}img:not(.fit){max-width:none;flex:none}
+video{flex:1;min-height:0;width:100%}audio{width:100%;flex:none}
+.ts{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--ac);color:#0b1c10;padding:8px 14px;border-radius:10px;z-index:50;font-weight:600;max-width:90vw;text-align:center}
+@media(max-width:760px){
+#side{position:fixed;bottom:0;left:0;right:0;width:auto;flex-direction:row;border:0;border-top:1px solid var(--ln);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:20;background:#0b1410}
+.logo{display:none}.nv{flex:1;flex-direction:column;gap:2px;font-size:11px;padding:6px;align-items:center;text-align:center}
+#view{padding:14px 14px 96px}h1{font-size:23px}}
+</style>
+</head>
+<body>
+<nav id="side">
+  <div class="logo"><i>▤</i>Library Reader</div>
+  <button class="nv on" data-v="home"><span>⌂</span>Overview</button>
+  <button class="nv" data-v="lib"><span>☰</span>Library</button>
+  <button class="nv" data-v="fav"><span>★</span>Favorites</button>
+  <button class="nv" data-v="set"><span>⚙</span>Settings</button>
+</nav>
+<div id="wrap"><div id="view"></div></div>
+<div id="rd" hidden>
+  <div class="rt"><button class="b" id="rx">‹ Back</button><h2 id="rt"></h2><button class="st" id="rf">☆</button></div>
+  <div id="tb"></div><div id="rb"></div>
+</div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),rxs=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const ext=n=>(n.split('.').pop()||'').toLowerCase(),sz=b=>b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';
+const IMG=['png','jpg','jpeg','gif','webp','svg','bmp','avif'],AUD=['mp3','wav','ogg','m4a','flac','aac'],VID=['mp4','webm','mov','m4v'];
+const grp=e=>['pdf','epub','mobi','djvu'].includes(e)?'books':['csv','tsv','json','xlsx','xls'].includes(e)?'data':['txt','md','html','htm','xml','log'].includes(e)?'text':[...IMG,...AUD,...VID].includes(e)?'media':'other';
+let L=[],cur='home',flt='all',q='',now=null,url='',pushed=false;
+const cfg=()=>Object.assign({o:'YamBasnet',r:'_mY-project_26',b:'',f:'books'},JSON.parse(localStorage.cfg||'{}'));
+const idb=new Promise((ok,no)=>{const r=indexedDB.open('libreader',1);r.onupgradeneeded=()=>{r.result.createObjectStore('meta',{keyPath:'id'});r.result.createObjectStore('blob')};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+const tx=async(s,m,f)=>{const d=await idb;return new Promise((ok,no)=>{const t=d.transaction(s,m),r=f(t.objectStore(s));t.oncomplete=()=>ok(r.result);t.onerror=()=>no(t.error)})};
+const put=m=>tx('meta','readwrite',s=>s.put(m));
+function toast(t){const e=document.createElement('div');e.className='ts';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}
+
+/* ---------- library data ---------- */
+async function getBlob(m){
+  const b=await tx('blob','readonly',s=>s.get(m.id));
+  if(b&&m.offline!==false)return b;
+  if(m.src!=='github'||!m.url){if(b)return b;throw 0}
+  try{const r=await fetch(m.url);if(!r.ok)throw 0;const n=await r.blob();await tx('blob','readwrite',s=>s.put(n,m.id));m.offline=true;await put(m);return n}
+  catch(e){if(b)return b;throw e}
+}
+async function sync(silent){
+  const c=cfg(),found=[];
+  try{
+    const walk=async(p,d)=>{
+      const r=await fetch('https://api.github.com/repos/'+c.o+'/'+c.r+'/contents/'+p+(c.b?'?ref='+encodeURIComponent(c.b):''));
+      if(!r.ok)throw new Error(r.status);
+      for(const x of await r.json()){if(x.type==='dir'&&d<3)await walk(x.path,d+1);else if(x.type==='file'&&x.name!=='.gitkeep')found.push(x)}
+    };
+    await walk(c.f,0);
+    const keep=new Set();
+    for(const x of found){
+      const id='gh:'+x.path;keep.add(id);let m=L.find(i=>i.id===id);
+      if(!m){m={id,added:Date.now()};L.push(m)}
+      if(m.sha&&m.sha!==x.sha)m.offline=false;
+      Object.assign(m,{name:x.name,path:x.path,size:x.size,src:'github',url:x.download_url,sha:x.sha});await put(m);
+    }
+    for(const m of L.filter(i=>i.src==='github'&&!keep.has(i.id)&&!i.offline)){await tx('meta','readwrite',s=>s.delete(m.id));L=L.filter(i=>i!==m)}
+    localStorage.sync=Date.now();draw();
+    if(!silent)toast('Library updated: '+found.length+' files');
+  }catch(e){if(!silent)toast(!navigator.onLine?'You are offline. Showing your saved library.':String(e.message)==='404'?'Folder “'+c.f+'” not found. Check Settings.':'Sync failed. Check Settings.')}
+}
+async function saveAll(){
+  const g=L.filter(m=>m.src==='github'&&!m.offline);
+  if(!g.length){toast('Everything is already saved offline');return}
+  let n=0;for(const m of g){try{await getBlob(m);n++;toast('Saved '+n+' of '+g.length)}catch(_){}}
+  draw();toast('Saved '+n+' file'+(n===1?'':'s')+' offline');
+}
+async function clearOff(){
+  for(const m of L.filter(i=>i.src==='github')){await tx('blob','readwrite',s=>s.delete(m.id));m.offline=false;await put(m)}
+  draw();toast('Offline copies removed');
+}
+async function addLocal(fs){
+  for(const f of fs){const m={id:'lo:'+Date.now()+Math.random().toString(36).slice(2,6),name:f.name,size:f.size,src:'local',offline:true,added:Date.now()};
+    await tx('blob','readwrite',s=>s.put(f,m.id));await put(m);L.push(m)}
+  toast(fs.length+' file'+(fs.length>1?'s':'')+' added');draw();
+}
+
+/* ---------- dashboard views ---------- */
+const row=m=>'<div class="row" data-id="'+esc(m.id)+'"><span class="ext">'+esc(ext(m.name).slice(0,4)||'file')+'</span><div class="nm"><b>'+esc(m.name)+'</b><small>'+(m.src==='github'?'GitHub':'On this device')+' · '+sz(m.size||0)+' · '+(m.offline?'✓ saved offline':'☁ online only')+'</small></div><button class="st'+(m.fav?' on':'')+'" data-f="1" aria-label="Favorite">'+(m.fav?'★':'☆')+'</button></div>';
+const list=a=>a.map(row).join('')||'<p class="mu" style="margin:8px">Nothing here yet.</p>';
+const filt=()=>L.filter(m=>(flt==='all'||grp(ext(m.name))===flt)&&m.name.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>a.name.localeCompare(b.name));
+const addBtn='<label class="b">Add files<input class="ad" type="file" multiple hidden></label>';
+function draw(){
+  document.querySelectorAll('.nv').forEach(n=>n.classList.toggle('on',n.dataset.v===cur));
+  const v=$('#view');
+  if(cur==='home'){
+    const off=L.filter(m=>m.offline).length,fv=L.filter(m=>m.fav),pc=L.length?Math.round(off/L.length*100):0;
+    const rec=L.filter(m=>m.opened).sort((a,b)=>b.opened-a.opened).slice(0,5);
+    v.innerHTML='<div class="top"><div><small class="mu">Dashboards / Overview</small><h1>My <span>Library</span></h1></div><div class="act"><button class="b p" data-a="sync">Sync GitHub</button>'+addBtn+'</div></div>'+
+    '<div class="kp"><div class="cd"><small class="mu">Files</small><b>'+L.length+'</b><small class="g">'+L.filter(m=>m.src==='github').length+' from GitHub</small></div>'+
+    '<div class="cd"><small class="mu">Saved offline</small><b>'+pc+'%</b><small class="g">'+off+' of '+L.length+'</small><div class="ring" style="--p:'+pc+'"></div></div>'+
+    '<div class="cd"><small class="mu">Favorites</small><b>'+fv.length+'</b><small class="g">starred</small></div>'+
+    '<div class="cd"><small class="mu">Last sync</small><b style="font-size:19px;margin:9px 0 6px">'+(localStorage.sync?new Date(+localStorage.sync).toLocaleDateString():'Never')+'</b><small class="g">GitHub</small></div></div>'+
+    '<div class="g2"><div class="cd"><h3>Recently opened</h3>'+list(rec)+'</div><div class="cd"><h3>Favorites</h3>'+list(fv.slice(0,5))+'</div></div>'+
+    (L.length?'':'<div class="cd" style="margin-top:12px"><h3>Get started</h3><p class="mu">Put books in the <b>'+esc(cfg().f)+'</b> folder of your GitHub repository, then tap <b>Sync GitHub</b>. Or tap <b>Add files</b> to keep files from this device.</p></div>');
+  }else if(cur==='lib'){
+    v.innerHTML='<div class="top"><h1>Library</h1><div class="act"><button class="b p" data-a="sync">Sync</button><button class="b" data-a="all">Save all offline</button>'+addBtn+'</div></div>'+
+    '<input id="sq" type="search" placeholder="Search books and files" value="'+esc(q)+'" style="width:100%"><div class="chips">'+['all','books','data','text','media'].map(c=>'<button class="b'+(flt===c?' p':'')+'" data-c="'+c+'">'+c+'</button>').join('')+'</div><div class="cd" id="ls">'+list(filt())+'</div>';
+    $('#sq').oninput=e=>{q=e.target.value;$('#ls').innerHTML=list(filt())};
+  }else if(cur==='fav'){
+    v.innerHTML='<div class="top"><h1>Favorites</h1></div><div class="cd">'+list(L.filter(m=>m.fav).sort((a,b)=>a.name.localeCompare(b.name)))+'</div>';
+  }else{
+    const c=cfg();
+    v.innerHTML='<div class="top"><h1>Settings</h1></div><div class="cd"><h3>GitHub library</h3>'+
+    '<label class="f">Owner<input id="co" value="'+esc(c.o)+'"></label><label class="f">Repository<input id="cr" value="'+esc(c.r)+'"></label>'+
+    '<label class="f">Books folder<input id="cf" value="'+esc(c.f)+'"></label><label class="f">Branch (leave empty for default)<input id="cb" value="'+esc(c.b)+'"></label>'+
+    '<button class="b p" id="sv" style="margin-top:8px">Save settings</button></div>'+
+    '<div class="cd" style="margin-top:12px"><h3>Offline</h3><p class="mu">Saved files open without internet. To install the app, use your browser menu → Add to Home Screen.</p><button class="b" data-a="clear">Remove offline copies of GitHub files</button></div>';
+    $('#sv').onclick=()=>{localStorage.cfg=JSON.stringify({o:$('#co').value.trim(),r:$('#cr').value.trim(),f:$('#cf').value.trim().replace(/^\/|\/$/g,''),b:$('#cb').value.trim()});toast('Settings saved');sync()};
+  }
+}
+$('#view').onclick=e=>{
+  const t=e.target,a=t.closest('[data-a]');
+  if(a){({sync:()=>sync(),all:saveAll,clear:clearOff})[a.dataset.a]();return}
+  const c=t.closest('[data-c]');if(c){flt=c.dataset.c;draw();return}
+  const r=t.closest('.row');if(!r)return;
+  const m=L.find(i=>i.id===r.dataset.id);
+  if(t.dataset.f){m.fav=!m.fav;put(m);draw()}else openIt(m);
+};
+$('#view').onchange=e=>{if(e.target.classList.contains('ad')){addLocal([...e.target.files]);e.target.value=''}};
+document.querySelectorAll('.nv').forEach(n=>n.onclick=()=>{cur=n.dataset.v;draw()});
+
+/* ---------- reader ---------- */
+const rb=$('#rb'),tb=$('#tb');
+function closeRd(){$('#rd').hidden=true;now=null;if(url)URL.revokeObjectURL(url);url='';rb.innerHTML='';draw()}
+$('#rx').onclick=()=>pushed?history.back():closeRd();
+window.onpopstate=()=>{pushed=false;closeRd()};
+$('#rf').onclick=()=>{if(!now)return;now.fav=!now.fav;put(now);$('#rf').textContent=now.fav?'★':'☆'};
+async function openIt(m){
+  now=m;$('#rd').hidden=false;$('#rt').textContent=m.name;$('#rf').textContent=m.fav?'★':'☆';tb.innerHTML='';
+  rb.innerHTML='<p class="mu" style="padding:20px">Loading…</p>';
+  if(!pushed){try{history.pushState({r:1},'');pushed=true}catch(_){}}
+  try{const b=await getBlob(m);m.opened=Date.now();await put(m);await show(m,b)}
+  catch(_){rb.innerHTML='<p class="mu" style="padding:20px">Couldn’t load this file. You are offline and it isn’t saved yet.</p>'}
+}
+function dl(m){const a=document.createElement('a');a.href=url;a.download=m.name;a.click()}
+async function show(m,b){
+  rb.innerHTML='';tb.innerHTML='';if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(b);const e=ext(m.name);
+  const add=(t,f)=>{const x=document.createElement('button');x.className='b';x.textContent=t;x.onclick=f;tb.appendChild(x);return x};
+  if(m.src==='local')add('Remove',async()=>{await tx('meta','readwrite',s=>s.delete(m.id));await tx('blob','readwrite',s=>s.delete(m.id));L=L.filter(i=>i!==m);pushed?history.back():closeRd()});
+  if(IMG.includes(e)){let fit=1;const im=new Image();im.src=url;im.className='fit';add('Fit / full size',()=>{fit=!fit;im.className=fit?'fit':''});rb.appendChild(im)}
+  else if(AUD.includes(e)||VID.includes(e)){const el=document.createElement(AUD.includes(e)?'audio':'video');el.controls=true;el.src=url;rb.appendChild(el)}
+  else if(e==='pdf'){add('Open in viewer',()=>window.open(url));add('Download',()=>dl(m));const em=document.createElement('embed');em.type='application/pdf';em.src=url;rb.appendChild(em)}
+  else{
+    const t=await b.text();
+    if(/\0/.test(t.slice(0,2000))){rb.innerHTML='<p class="mu" style="padding:20px">This file type can’t be previewed here.</p>';add('Download',()=>dl(m));return}
+    if(e==='csv'||e==='tsv')tbl(t,e,add);else if(e==='md')md(t);else if(e==='html'||e==='htm')htm(t,add);else txt(e==='json'?pj(t):t,add);
+  }
+}
+const pj=t=>{try{return JSON.stringify(JSON.parse(t),null,2)}catch(_){return t}};
+function txt(t,add){
+  let wr=1;const p=document.createElement('pre');p.className='tx wrap';p.textContent=t;rb.appendChild(p);
+  const f=document.createElement('input');f.type='search';f.placeholder='Find in file';f.style.flex='1';tb.appendChild(f);
+  f.oninput=()=>{if(!f.value){p.textContent=t;return}p.innerHTML=esc(t).replace(new RegExp(rxs(esc(f.value)),'gi'),m=>'<mark>'+m+'</mark>');const k=p.querySelector('mark');if(k)k.scrollIntoView({block:'center'})};
+  add('Wrap',()=>{wr=!wr;p.className='tx'+(wr?' wrap':'')});
+}
+function md(t){
+  let s=esc(t).replace(/```([\s\S]*?)```/g,'<pre>$1</pre>').replace(/^(#{1,6}) (.*)$/gm,(m,h,v)=>'<h'+h.length+'>'+v+'</h'+h.length+'>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>').replace(/^[-*] (.*)$/gm,'<li>$1</li>').replace(/\n{2,}/g,'<br><br>');
+  const d=document.createElement('div');d.className='doc';d.innerHTML=s;rb.appendChild(d);
+}
+function htm(t,add){
+  let sc=0;const draw=()=>{rb.innerHTML='';const f=document.createElement('iframe');f.sandbox=sc?'allow-scripts':'';f.srcdoc=t;rb.appendChild(f)};
+  const b=add('Scripts: off',()=>{sc=!sc;b.textContent='Scripts: '+(sc?'on':'off');draw()});draw();
+}
+function parseCSV(t,d){
+  const r=[];let row=[],f='',q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===d){row.push(f);f=''}else if(c==='\n'){row.push(f);r.push(row);row=[];f=''}else if(c!=='\r')f+=c}
+  if(f||row.length){row.push(f);r.push(row)}return r;
+}
+function tbl(t,e,add){
+  const d=e==='tsv'?'\t':[',',';','\t','|'].map(c=>[c,(t.split('\n')[0]||'').split(c).length]).sort((a,b)=>b[1]-a[1])[0][0];
+  const R=parseCSV(t,d),H=R[0]||[],B=R.slice(1);let sc=-1,as=1,lim=B.length>50000?5000:1e9;
+  const f=document.createElement('input');f.type='search';f.placeholder='Filter rows';f.style.flex='1';tb.appendChild(f);
+  const info=document.createElement('small');info.className='mu';tb.appendChild(info);
+  const w=document.createElement('div');w.className='tw';rb.appendChild(w);
+  add('Show all rows',()=>{lim=1e9;dr()});
+  const num=v=>v!==''&&!isNaN(v.replace(/[,$%\s]/g,'')),nv=v=>parseFloat(v.replace(/[,$%\s]/g,''));
+  const dr=()=>{
+    const k=f.value.toLowerCase();let D=k?B.filter(r=>r.some(c=>c.toLowerCase().includes(k))):B.slice();
+    if(sc>=0)D.sort((a,b)=>{const u=a[sc]||'',v=b[sc]||'';const r=num(u)&&num(v)?nv(u)-nv(v):u.localeCompare(v);return as?r:-r});
+    info.textContent=D.length.toLocaleString()+' rows';
+    w.innerHTML='<table><thead><tr>'+H.map((c,i)=>'<th data-i="'+i+'">'+esc(c)+(i===sc?(as?' ▲':' ▼'):'')+'</th>').join('')+'</tr></thead><tbody>'+D.slice(0,lim).map(r=>'<tr>'+H.map((_,i)=>'<td>'+esc(r[i]||'')+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+    w.querySelectorAll('th').forEach(h=>h.onclick=()=>{const i=+h.dataset.i;if(sc===i)as=!as;else{sc=i;as=1}dr()});
+  };
+  f.oninput=dr;dr();
+}
+
+/* ---------- start ---------- */
+(async()=>{
+  L=await tx('meta','readonly',s=>s.getAll());draw();
+  if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if(navigator.onLine&&Date.now()-(+localStorage.sync||0)>6e5)sync(true);
+})();
+</script>
+</body>
+</html>
